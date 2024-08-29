@@ -33,6 +33,7 @@ rule QualityControlfastp:
         -o {output[0]} \
         -O {output[1]} \
         -h {output[2]} \
+        -j /dev/null \
         -q {qualified_quality_phred} \
         -u {unqualified_percent_limit} \
         -f {trim_front} \
