@@ -10,17 +10,19 @@ trim_front = config.get("trim_front", 10)
 
 rule all:
     input:
-        expand("mapping/{sample}.sorted.markdup.bam", sample=config["sample"]),
-        
+        expand("clean_data/{sample}_1_clean.fq.gz", sample=config["sample"]),
+        expand("clean_data/{sample}_2_clean.fq.gz", sample=config["sample"]),
+        expand("mapping/{sample}.sorted.bam", sample=config["sample"]),
+        "counts/counts.txt"
 
 rule QualityControlfastp:
     input:
-        f"raw_data/{{sample}}_1{fastq_suffix}",
-        f"raw_data/{{sample}}_2{fastq_suffix}"
+        f"raw_data/{{sample}}_R1{fastq_suffix}",
+        f"raw_data/{{sample}}_R2{fastq_suffix}"
     output:
         "clean_data/{sample}_1_clean.fq.gz",
         "clean_data/{sample}_2_clean.fq.gz",
-        "clean_data/{sample}.fastp.html"
+        "logs/fastp/fastp_report/{sample}.fastp.html"
     log:
         "logs/fastp/{sample}.log"
     threads: 2
@@ -42,21 +44,13 @@ rule QualityControlfastp:
 
 rule Hisat2_map:
     input:
-        "clean_data/{sample}.1_clean.fq.gz",
-        "clean_data/{sample}.2_clean.fq.gz",
-        "genome_index/{ref_basename}.1.ht2",
-        "genome_index/{ref_basename}.2.ht2",
-        "genome_index/{ref_basename}.3.ht2",
-        "genome_index/{ref_basename}.4.ht2",
-        "genome_index/{ref_basename}.5.ht2",
-        "genome_index/{ref_basename}.6.ht2",
-        "genome_index/{ref_basename}.7.ht2",
-        "genome_index/{ref_basename}.8.ht2"
+        "clean_data/{sample}_1_clean.fq.gz",
+        "clean_data/{sample}_2_clean.fq.gz"
     output:
         "mapping/{sample}.sorted.bam"
     threads: 8
     params:
-        hisat_index="genome_index/{ref_basename}"
+        hisat_index=f"genome_index/{ref_basename}"
     log:
         "logs/hisat2/hisat2_map_{sample}.log"
     shell:
@@ -68,9 +62,7 @@ rule Hisat2_map:
         -2 {input[1]} \
         --very-sensitive \
         --dta \
-        | samtools view -Sb \
-        | samtools sort > \
-        {output} \
+        | samtools sort -@ {threads} -o {output} \
         &> {log}
         """
 
