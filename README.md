@@ -76,7 +76,7 @@ sample3
 sample4
 
 # Add samples to the config file:
-sed 's/^/    - /' sample.list >> ${working_dir}/SNPcalling_config.yaml
+sed 's/^/    - /' sample.list >> ${working_dir}/RNAseq_config.yaml
 ```
 
 ### 3. Submit the pipeline to HPC cluster
