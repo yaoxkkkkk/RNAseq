@@ -23,6 +23,8 @@
 
 ## What to output
 
+Gene expression count matrix
+
 ## Usage
 
 ### 1. Prepare your working directory
