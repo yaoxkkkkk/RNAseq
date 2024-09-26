@@ -99,8 +99,8 @@ rule Subread_featureCounts:
         "counts/counts.txt"
     threads: 8
     params:
-        feature="exon",
-        attribute="gene_id"
+        feature=config["feature_type"],
+        attribution=config["attribution"]
     log:
         "logs/subread/featureCounts.log"
     shell:
@@ -112,7 +112,7 @@ rule Subread_featureCounts:
         -B \
         -C \
         -t {params.feature} \
-        -g {params.attribute} \
+        -g {params.attribution} \
         -a {input.annotation} \
         -o {output} \
         {input.bam}
