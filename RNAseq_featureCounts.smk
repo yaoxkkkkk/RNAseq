@@ -83,8 +83,8 @@ rule HISAT2_map:
         hisat2 \
         -p {threads} \
         -x {params.hisat_index} \
-        -1 {input[0]} \
-        -2 {input[1]} \
+        -1 {input[1]} \
+        -2 {input[2]} \
         --very-sensitive \
         --dta \
         | samtools sort -@ {threads} -o {output} \
