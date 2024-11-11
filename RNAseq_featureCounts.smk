@@ -68,9 +68,9 @@ rule QualityControlfastp:
 
 rule HISAT2_map:
     input:
-        expand("genome_index/{ref_basename}.{ext}", ref_basename=ref_basename, ext=["1.ht2", "2.ht2", "3.ht2", "4.ht2", "5.ht2", "6.ht2", "7.ht2", "8.ht2"]),
-        "clean_data/{sample}_1_clean.fq.gz",
-        "clean_data/{sample}_2_clean.fq.gz"
+        hisat_index=expand("genome_index/{ref_basename}.{ext}", ref_basename=ref_basename, ext=["1.ht2", "2.ht2", "3.ht2", "4.ht2", "5.ht2", "6.ht2", "7.ht2", "8.ht2"]),
+        R1="clean_data/{sample}_1_clean.fq.gz",
+        R2="clean_data/{sample}_2_clean.fq.gz"
     output:
         "mapping/{sample}.sorted.bam"
     threads: 8
@@ -83,8 +83,8 @@ rule HISAT2_map:
         hisat2 \
         -p {threads} \
         -x {params.hisat_index} \
-        -1 {input[1]} \
-        -2 {input[2]} \
+        -1 {input.R1} \
+        -2 {input.R2} \
         --very-sensitive \
         --dta \
         | samtools sort -@ {threads} -o {output} \
