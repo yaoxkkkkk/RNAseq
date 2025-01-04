@@ -1,0 +1,32 @@
+# config.yaml
+
+# dependent script
+mstrg_prep_revise_path: "/dssg/home/acct-jiang.lu/jiang.lu-user1/.yaoxk_dir/PhD/RNA_seq/inhouse_script/mstrg_prep_revise.pl"
+
+# Absolute path to the genome fasta file
+ref: ""
+annotation: ""
+
+# Fastq file suffix
+fastq_suffix: ".fq.gz" # Defualt is ".fq.gz"
+
+# Fastp parameters
+qualified_quality_phred: 20
+unqualified_percent_limit: 40
+trim_front: 10
+
+# Featurecounts parameters
+feature_type: "exon"
+attribution: "gene_id"
+
+# Singularity container path
+singularity:
+  AGAT_image: ""
+  
+# conda environment
+conda_env:
+  transdecoder_conda: ""
+
+# Sample list
+sample:
+
