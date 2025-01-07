@@ -34,7 +34,7 @@ rule HISAT2_index:
         hisat2-build \
         {input.reference_genome} \
         genome_index/{wildcards.ref_basename} \
-        &> {log}
+        2> {log}
         """
 
 rule QualityControlfastp:
@@ -61,7 +61,7 @@ rule QualityControlfastp:
         -q {qualified_quality_phred} \
         -u {unqualified_percent_limit} \
         -f {trim_front} \
-        &> {log}
+        2> {log}
         """
 
 rule HISAT2_map:
@@ -85,7 +85,7 @@ rule HISAT2_map:
         -2 {input.R2} \
         --dta \
         | samtools sort -@ {threads} -o {output} \
-        &> {log}
+        2> {log}
         """
 
 rule StringtieAssembly:
@@ -104,7 +104,7 @@ rule StringtieAssembly:
         -G {input.annotation} \
         -o {output.gtf} \
         {input.bam} \
-        &> {log}
+        2> {log}
         """
 
 rule ExtractGTFlist:
@@ -136,7 +136,7 @@ rule StringtieGTFmerge:
         -G {input.annotation} \
         -o {output} \
         {input.gtflist} \
-        &> {log}
+        2> {log}
         """
         
 rule Modify_Merged_GTF:
@@ -205,7 +205,7 @@ rule TransDecoder_LongOrfs:
         """
         TransDecoder.LongOrfs \
         -t {input} \
-        &> {log}
+        2> {log}
         """
         
 rule TransDecoder_Predict:
@@ -222,7 +222,7 @@ rule TransDecoder_Predict:
         """
         TransDecoder.Predict \
         -t {input[0]} \
-        &> {log}
+        2> {log}
         """
     
 rule cdna_alignment_orf_to_genome_orf:
@@ -262,7 +262,7 @@ rule filter_incomplete_gene_coding_models:
         --gff {input.gff3} \
         --fasta {input.genome_file} \
         -o {output} \
-        &> {log}
+        2> {log}
         """
         
 rule remove_attributes:
@@ -279,7 +279,8 @@ rule remove_attributes:
         agat_sp_manage_attributes.pl \
         -gff {input} \
         --att all_attributes \
-        -o {output}
+        -o {output} \
+        2> {log}
         """
         
 rule extract_cds:
@@ -298,7 +299,8 @@ rule extract_cds:
         --gff {input.gff3} \
         --fasta {input.genome_file} \
         -t cds \
-        -o {output}
+        -o {output} \
+        2> {log}
         """
         
 rule extract_pep:
@@ -318,7 +320,8 @@ rule extract_pep:
         --fasta {input.genome_file} \
         -t cds \
         -p \
-        -o {output}
+        -o {output} \
+        2> {log}
         """
         
 rule gene_quantification:
@@ -339,5 +342,6 @@ rule gene_quantification:
         -G {input.gff3} \
         -o {output.countGTF} \
         -A {output.countTAB} \
-        {input.bam}
+        {input.bam} \
+        2> {log}
         """
