@@ -85,10 +85,9 @@ rule HISAT2_map:
         -x {params.hisat_index} \
         -1 {input.R1} \
         -2 {input.R2} \
-        --very-sensitive \
         --dta \
         | samtools sort -@ {threads} -o {output} \
-        &> {log}
+        2> {log}
         """
 
 rule Subread_featureCounts:
@@ -115,5 +114,6 @@ rule Subread_featureCounts:
         -g {params.attribution} \
         -a {input.annotation} \
         -o {output} \
-        {input.bam}
+        {input.bam} \
+        2> {log}
         """
