@@ -1,19 +1,12 @@
-# RNAseq-snakemake-pipeline
-
 ## Dependent Software
 
-- fastp
-- HISAT2
-- samtools
-- featureCounts
-- stringtie
-
-## What the pipeline does
-
-- Genome file index creation (HISAT2)
-- RNA-seq reads quality control
-- RNA-seq reads map to reference genome
-- Transcripts abundance quantification
+- [fastp](https://github.com/OpenGene/fastp)
+- [HISAT2](http://daehwankimlab.github.io/hisat2/)
+- [samtools](https://github.com/samtools/samtools)
+- [featureCounts](https://subread.sourceforge.net/featureCounts.html)
+- [stringtie](https://ccb.jhu.edu/software/stringtie/)
+- [AGAT](https://github.com/NBISweden/AGAT)
+- [TransDecoder](https://github.com/TransDecoder/TransDecoder)
 
 ## What to input
 
@@ -23,7 +16,7 @@
 
 ## What to output
 
-Gene expression count matrix
+Gene expression count matrix.
 
 ## Usage
 
@@ -43,31 +36,31 @@ Please storage your resequence data in `raw_data/` folder and genome file in `ge
 
 The config file needs to be at the same folder of snakefile.
 
-2.1 Move the genome file to `genome_index/` folder and add the genome fasta file absolute path like:
+#### 2.1 Move the genome file to `genome_index/` folder and add the genome fasta file absolute path like:
 
 ```shell
 # Absolute path to the genome fasta file
 ref: "/workingdir/genome_index/genome.fasta" 
 ```
 
-2.2 Sometimes the fastq files may be ended with `.fastq.gz` or `.fq.gz`, specify the suffix of the fastq files if it's necessary.
+#### 2.2 Sometimes the fastq files may be ended with `.fastq.gz` or `.fq.gz`, specify the suffix of the fastq files if it's necessary.
 
 ```shell
 # Fastq file suffix
 fastq_suffix: " " # Default value is ".fq.gz"
 ```
 
-2.3 Fill in the name of the samples. The samples name need to be filled with specific format like:
+#### 2.3 Fill in the name of the samples. The samples name need to be filled with specific format like:
 
 ```shell
 # Sample list, samples' name should start with letters.
 sample:
-    - sample1
-    - sample2
-    - sample3
-    - sample4
+    - "sample1"
+    - "sample2"
+    - "sample3"
+    - "sample4"
     - ...
-    - samplen
+    - "samplen"
 ```
 
 You can use following command to add sample list to the config file if you have a sample list txt file (for example `sample.list`):
@@ -80,7 +73,7 @@ sample3
 sample4
 
 # Add samples to the config file:
-sed 's/^/    - /' sample.list >> ${working_dir}/RNAseq_config.yaml
+awk '{print "    - \"" $0 "\""}' sample.list >> ${working_dir}/SNPcalling_config.yaml
 ```
 
 ### 3. Submit the pipeline to HPC cluster
@@ -89,11 +82,7 @@ For example:
 
 ```shell
 snakemake \
-	--snakefile ${working_dir}/00-script/snake_pipeline/${snakemake_file} \
+	--snakefile ${snakefile} \
 	-d ${working_dir} \
-    	--configfile ${working_dir}/RNAseq_config.yaml \
-	--cores ${cores_num} \
-	--rerun-incomplete \
-	--latency-wait 360 \
-	--keep-going
+	--cores ${cores_num}
 ```

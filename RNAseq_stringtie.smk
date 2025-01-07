@@ -3,17 +3,17 @@ import os
 configfile: "RNAseq_config.yaml"
 
 # 提取文件名的基部分（去除路径和扩展名）
-ref_basename=os.path.splitext(os.path.basename(config["ref"]))[0]
-fastq_suffix=config.get("fastq_suffix", ".fq.gz")
-
-qualified_quality_phred=config.get("qualified_quality_phred", 20)
-unqualified_percent_limit=config.get("unqualified_percent_limit", 40)
-trim_front=config.get("trim_front", 10)
+ref_basename = os.path.splitext(os.path.basename(config["ref"]))[0]
+fastq_suffix = config.get("fastq_suffix", ".fq.gz")
 
 rule all:
     input:
-        expand("count/{sample}.count.gtf", sample = config["sample"]),
-        expand("count/tab/{sample}.tab", sample = config["sample"])
+        expand("mapping/{sample}.sorted.bam", sample=config["sample"]),
+        "count/tab/{sample}.tab",
+        "count/{sample}.count.gtf",
+        "gtf/stringtie.transdecoder.clean.cds.fasta",
+        "gtf/stringtie.transdecoder.clean.pep.fasta"
+
 
 rule HISAT2_index:
     input:
@@ -39,15 +39,19 @@ rule HISAT2_index:
 
 rule QualityControlfastp:
     input:
-        f"raw_data/{{sample}}_R1{fastq_suffix}",
-        f"raw_data/{{sample}}_R2{fastq_suffix}"
+        f"raw_data/{{sample}}_clean_1{fastq_suffix}",
+        f"raw_data/{{sample}}_clean_2{fastq_suffix}"
     output:
         "clean_data/{sample}_1_clean.fq.gz",
         "clean_data/{sample}_2_clean.fq.gz",
         "logs/fastp/fastp_report/{sample}.fastp.html"
+    threads: 2
+    params:
+        qualified_quality_phred=config["qualified_quality_phred"],
+        unqualified_percent_limit=config["unqualified_percent_limit"],
+        trim_front=config["trim_front"]
     log:
         "logs/fastp/{sample}.log"
-    threads: 2
     shell:
         """
         fastp \
@@ -58,9 +62,9 @@ rule QualityControlfastp:
         -O {output[1]} \
         -h {output[2]} \
         -j /dev/null \
-        -q {qualified_quality_phred} \
-        -u {unqualified_percent_limit} \
-        -f {trim_front} \
+        -q {params.qualified_quality_phred} \
+        -u {params.unqualified_percent_limit} \
+        -f {params.trim_front} \
         2> {log}
         """
 
@@ -196,7 +200,7 @@ rule TransDecoder_LongOrfs:
     input:
         "gtf/stringtie.exon.fasta"
     output:
-        directory("stringtie.exon.fasta.transdecoder_dir/")
+        temp(directory("stringtie.exon.fasta.transdecoder_dir/"))
     conda:
         config["conda_env"]["transdecoder_conda"]
     log:
@@ -213,7 +217,7 @@ rule TransDecoder_Predict:
         "gtf/stringtie.exon.fasta",
         "stringtie.exon.fasta.transdecoder_dir/"
     output:
-        expand("stringtie.exon.fasta.transdecoder.{ext}", ext=["bed", "cds", "gff3", "pep"])
+        temp(expand("stringtie.exon.fasta.transdecoder.{ext}", ext=["bed", "cds", "gff3", "pep"]))
     conda:
         config["conda_env"]["transdecoder_conda"]
     log:

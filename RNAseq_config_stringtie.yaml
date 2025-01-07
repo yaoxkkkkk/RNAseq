@@ -1,7 +1,7 @@
 # config.yaml
 
 # dependent script
-mstrg_prep_revise_path: "/dssg/home/acct-jiang.lu/jiang.lu-user1/.yaoxk_dir/PhD/RNA_seq/inhouse_script/mstrg_prep_revise.pl"
+mstrg_prep_revise_path: "/path/to/mstrg_prep_revise.pl"
 
 # Absolute path to the genome fasta file
 ref: ""
