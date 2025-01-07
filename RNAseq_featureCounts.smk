@@ -36,7 +36,7 @@ rule HISAT2_index:
         hisat2-build \
         {input.reference_genome} \
         genome_index/{wildcards.ref_basename} \
-        &> {log}
+        2> {log}
         """
 
 rule QualityControlfastp:
@@ -63,7 +63,7 @@ rule QualityControlfastp:
         -q {qualified_quality_phred} \
         -u {unqualified_percent_limit} \
         -f {trim_front} \
-        &> {log}
+        2> {log}
         """
 
 rule HISAT2_map:
