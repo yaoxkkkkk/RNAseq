@@ -73,7 +73,7 @@ sample3
 sample4
 
 # Add samples to the config file:
-awk '{print "    - \"" $0 "\""}' sample.list >> ${working_dir}/SNPcalling_config.yaml
+awk '{print "    - \"" $0 "\""}' sample.list >> ${working_dir}/RNAseq_config_featureCounts.yaml
 ```
 
 ### 3. Submit the pipeline to HPC cluster
